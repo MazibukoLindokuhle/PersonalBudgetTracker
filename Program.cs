@@ -9,59 +9,99 @@ class Program
         // Create an instance of the BudgetManager class to manage income and expenses.
         BudgetManager budgetManager = new BudgetManager();
 
+        // Variable to track if the user is authenticated
+        Console.WriteLine("Welcome to the Personal Budget Tracker!");
+        bool isAuthenticated = false;
 
+        // Loop until the user is authenticated
+        while (!isAuthenticated)
+        {
+            // Display authentication options
+            Console.WriteLine("Choose an option: Register or Login");
+
+            // Read the user's choice
+            string choice = Console.ReadLine()?.Trim().ToLower();
+
+            if (choice == "register")
+            {
+                // Prompt for username and password for registration.
+                Console.Write("Enter a username: ");
+                string username = Console.ReadLine()?.Trim();
+                Console.Write("Enter a password: ");
+                string password = Console.ReadLine()?.Trim();
+
+                // Register the user and log them in automatically if successful.
+                if (budgetManager.RegisterUser(username, password))
+                {
+                    Console.WriteLine("User registered successfully!");
+                    isAuthenticated = true;
+                    Console.WriteLine("You are now logged in!");
+                }
+            }
+            else if (choice == "login")
+            {
+                // Prompt for username and password for login.
+                Console.Write("Enter your username: ");
+                string username = Console.ReadLine()?.Trim();
+                Console.Write("Enter your password: ");
+                string password = Console.ReadLine()?.Trim();
+
+                // Attempt to authenticate the user.
+                if (budgetManager.AuthenticateUser(username, password))
+                {
+                    Console.WriteLine("Login successful!");
+                    isAuthenticated = true;
+                }
+            }
+            if (!isAuthenticated)
+            {
+                Console.WriteLine("Invalid option or credentials, please try again.");
+            }
+        }
+
+        // Main menu for authenticated users.
         while (true)
         {
-            // Display a menu with available options.
-            Console.WriteLine("\nEnter a command (Add Income, Add Expense, View Balance, Quit):");
-            string command = Console.ReadLine().ToLower();
+            Console.WriteLine("Enter a command (Add Income, Add Expense, View Balance, Quit):");
+            string command = Console.ReadLine()?.Trim().ToLower();
 
-            // Switch case to handle user input.
-            switch (command)
+            if (command == "add income")
             {
-                case "add income":
-                    // Get the income amount and description from the user.
-                    Console.Write("Enter the income amount: ");
-                    decimal incomeAmount = Convert.ToDecimal(Console.ReadLine());
-                    Console.Write("Enter the income description (e.g., Salary, Freelance): ");
-                    string incomeDescription = Console.ReadLine();
+                // Code to add income entry
+                Console.Write("Enter income amount: ");
+                decimal amount = Convert.ToDecimal(Console.ReadLine());
+                Console.Write("Enter income description: ");
+                string description = Console.ReadLine();
 
-                    // Add the income using the AddIncome method.
-                    budgetManager.AddIncome(incomeAmount, incomeDescription);
-                    Console.WriteLine($"Income added: {incomeDescription} - Amount: {incomeAmount}");
-                    break;
+                budgetManager.AddIncome(amount, description);
+                Console.WriteLine("Income added successfully.");
+            }
+            else if (command == "add expense")
+            {
+                // Code to add expense entry
+                Console.Write("Enter expense amount: ");
+                decimal amount = Convert.ToDecimal(Console.ReadLine());
+                Console.Write("Enter expense description: ");
+                string description = Console.ReadLine();
 
-                case "add expense":
-                    // Get the expense amount and description from the user.
-                    Console.Write("Enter the expense amount: ");
-                    decimal expenseAmount = Convert.ToDecimal(Console.ReadLine());
-                    Console.Write("Enter the expense description (e.g., Rent, Groceries): ");
-                    string expenseDescription = Console.ReadLine();
-
-                    // Add the expense using the AddExpense method.
-                    budgetManager.AddExpense(expenseAmount, expenseDescription);
-                    Console.WriteLine($"Expense added: {expenseDescription} - Amount: {expenseAmount}");
-                    break;
-
-                case "view balance":
-                    // Get the current balance by calling the GetBalance method.
-                    decimal balance = budgetManager.GetBalance();
-
-                    // Display the balance.
-                    Console.WriteLine($"Your current balance is: {balance}");
-                    break;
-
-                case "quit":
-                    // Exit the program when "quit" is entered.
-                    Console.WriteLine("Exiting the program...");
-                    return;  // Exit the application.
-
-                default:
-                    // Handle invalid commands.
-                    Console.WriteLine("Invalid command. Please try again.");
-                    break;
+                budgetManager.AddExpense(amount, description);
+                Console.WriteLine("Expense added successfully.");
+            }
+            else if (command == "view balance")
+            {
+                // Display current balance by calling GetBalance
+                decimal balance = budgetManager.GetBalance();
+                Console.WriteLine($"Current balance: {balance}");
+            }
+            else if (command == "quit" || command == "exit") 
+            {
+                Console.WriteLine("Exiting the program...");
+                break;
+            }
+            else
+            {
+                Console.WriteLine("Invalid command. Please try again.");
             }
         }
     }
-
 }

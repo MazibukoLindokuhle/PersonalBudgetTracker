@@ -7,51 +7,80 @@ using System.Text;
 // BudgetManager class is responsible for managing income and expenses.
 public class BudgetManager
 {
-    // List to store registered users
-    private List<User> users = new List<User>();
+    private const string UserDataFile = "user_data.txt";
+    private Dictionary<string, string> users = new Dictionary<string, string>();
+
+    public BudgetManager()
+    {
+        LoadUsers();
+    }
+    
+    // Dictionary to store user credentials with username as the key and password as the value.
+    private Dictionary<string, string> userCredentials = new Dictionary<string, string>();
 
     // Fields to store the authenticated user's income and expenses
     private List<Income> incomes = new List<Income>();
     private List<Expense> expenses = new List<Expense>();
 
-    // Method to register a new user with username and password
+    // RegisterUser method to add new users with a username and password.
     public bool RegisterUser(string username, string password)
     {
-        // Check if username is already taken
-        if (users.Any(user => user.Username == username))
+        // Check if the username already exists in the credentials dictionary.
+        if (userCredentials.ContainsKey(username))
         {
-            Console.WriteLine("Username already exists. Try a different username.");
-            return false; // Registration failed
+            Console.WriteLine("Username already exists. Please try a different username.");
+            return false;
         }
 
-        // Hash the password before storing
-        string passwordHash = HashPassword(password);
+        string hashedPassword = HashPassword(password);
+        users[username] = hashedPassword;
 
-        // Create a new User object and add it to the list of users
-        users.Add(new User(username, passwordHash));
-
-        Console.WriteLine("User registered successfully!");
-        return true; // Registration successful
+        SaveUserToFile(username, hashedPassword);
+        return true;
     }
 
-    // Method to authenticate a user with their username and password
+    // AuthenticateUser method to check if provided username and password match any registered user.
     public bool AuthenticateUser(string username, string password)
     {
-        // Find the user by username
-        var user = users.FirstOrDefault(user => user.Username == username);
-        
-        // Check if user exists and if the hashed password matches
-        if (user != null && user.PasswordHash == HashPassword(password))
+        if (users.TryGetValue(username, out string storedHashedPassword))
         {
-            Console.WriteLine("Authentication successful!");
-            return true; // Authentication successful
+            string hashedPassword = HashPassword(password);
+            return storedHashedPassword == hashedPassword;
         }
-        else
+
+        Console.WriteLine("Invalid username or password.");
+        return false;
+    }
+
+    // Save a single user's data to file
+    private void SaveUserToFile(string username, string hashedPassword)
+    {
+        using (StreamWriter sw = File.AppendText(UserDataFile))
         {
-            Console.WriteLine("Invalid username or password.");
-            return false; // Authentication failed
+            sw.WriteLine($"{username}:{hashedPassword}");
         }
     }
+
+    // Load all user data from file
+    private void LoadUsers()
+    {
+        if (!File.Exists(UserDataFile))
+        {
+            return;
+        }
+
+        foreach (var line in File.ReadAllLines(UserDataFile))
+        {
+            var parts = line.Split(':');
+            if (parts.Length == 2)
+            {
+                string username = parts[0];
+                string hashedPassword = parts[1];
+                users[username] = hashedPassword;
+            }
+        }
+    }
+
 
     // Helper method to hash a password for secure storage
     private string HashPassword(string password)
@@ -116,17 +145,22 @@ public class BudgetManager
         }
     }
 
-    // Method to calculate and return the balance (Income - Expenses).
+    // // Method to calculate and return the balance (Income - Expenses).
+    // public decimal GetBalance()
+    // {
+    //     // Get the total income and total expenses.
+    //     decimal totalIncome = GetTotalIncome();
+    //     decimal totalExpenses = GetTotalExpenses();
+
+    //     // Calculate the balance by subtracting expenses from income.
+    //     decimal balance = totalIncome - totalExpenses;
+
+    //     // Return the balance.
+    //     return balance;
+    // }
+
     public decimal GetBalance()
     {
-        // Get the total income and total expenses.
-        decimal totalIncome = GetTotalIncome();
-        decimal totalExpenses = GetTotalExpenses();
-
-        // Calculate the balance by subtracting expenses from income.
-        decimal balance = totalIncome - totalExpenses;
-
-        // Return the balance.
-        return balance;
+        return GetTotalIncome() - GetTotalExpenses();
     }
 }
