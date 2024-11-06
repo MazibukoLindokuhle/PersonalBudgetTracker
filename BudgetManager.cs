@@ -1,15 +1,76 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
+using System.Text;
 
 // BudgetManager class is responsible for managing income and expenses.
 public class BudgetManager
 {
-    // List to store all income entries.
-    private List<Income> incomes = new List<Income>();
+    // List to store registered users
+    private List<User> users = new List<User>();
 
-    // List to store all expense entries.
+    // Fields to store the authenticated user's income and expenses
+    private List<Income> incomes = new List<Income>();
     private List<Expense> expenses = new List<Expense>();
+
+    // Method to register a new user with username and password
+    public bool RegisterUser(string username, string password)
+    {
+        // Check if username is already taken
+        if (users.Any(user => user.Username == username))
+        {
+            Console.WriteLine("Username already exists. Try a different username.");
+            return false; // Registration failed
+        }
+
+        // Hash the password before storing
+        string passwordHash = HashPassword(password);
+
+        // Create a new User object and add it to the list of users
+        users.Add(new User(username, passwordHash));
+
+        Console.WriteLine("User registered successfully!");
+        return true; // Registration successful
+    }
+
+    // Method to authenticate a user with their username and password
+    public bool AuthenticateUser(string username, string password)
+    {
+        // Find the user by username
+        var user = users.FirstOrDefault(user => user.Username == username);
+        
+        // Check if user exists and if the hashed password matches
+        if (user != null && user.PasswordHash == HashPassword(password))
+        {
+            Console.WriteLine("Authentication successful!");
+            return true; // Authentication successful
+        }
+        else
+        {
+            Console.WriteLine("Invalid username or password.");
+            return false; // Authentication failed
+        }
+    }
+
+    // Helper method to hash a password for secure storage
+    private string HashPassword(string password)
+    {
+        using (SHA256 sha256 = SHA256.Create())
+        {
+            // Convert the password into a byte array
+            byte[] bytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
+
+            // Convert the byte array to a hexadecimal string
+            StringBuilder result = new StringBuilder();
+            foreach (byte b in bytes)
+            {
+                result.Append(b.ToString("x2"));
+            }
+
+            return result.ToString();
+        }
+    }
 
     // Method to add a new income entry to the list.
     public void AddIncome(decimal amount, string description)
@@ -53,5 +114,19 @@ public class BudgetManager
         {
             Console.WriteLine($"{expense.Description}: {expense.Amount}");
         }
+    }
+
+    // Method to calculate and return the balance (Income - Expenses).
+    public decimal GetBalance()
+    {
+        // Get the total income and total expenses.
+        decimal totalIncome = GetTotalIncome();
+        decimal totalExpenses = GetTotalExpenses();
+
+        // Calculate the balance by subtracting expenses from income.
+        decimal balance = totalIncome - totalExpenses;
+
+        // Return the balance.
+        return balance;
     }
 }
