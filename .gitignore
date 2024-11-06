@@ -1,0 +1,25 @@
+# Build Folders
+bin/
+obj/
+
+# VS Code settings
+.vscode/
+
+# User-specific files
+*.user
+*.suo
+
+# Auto-generated files by Visual Studio Code
+.vscode/*.*
+.vs/
+*.sln.docstates
+
+# Package-specific
+*.nupkg
+*.snupkg
+*.log
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
