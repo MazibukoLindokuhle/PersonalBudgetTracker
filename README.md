@@ -28,7 +28,7 @@ A simple console-based **Personal Budget Tracker** application built with C#/.NE
     ```bash
     dotnet run
 
-**Usage**
+## Usage
 
     1.Register or Login:
         On starting the program, you will be prompted to register or log in.
@@ -47,4 +47,12 @@ A simple console-based **Personal Budget Tracker** application built with C#/.NE
     5.Quit:
         Enter "quit" to exit the program.
 
-    
+## License
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a pull request or open an issue.
+
+This README file provides a comprehensive guide on how to use the Contact Book project, including features, requirements, how to run, and an example interaction.
