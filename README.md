@@ -17,7 +17,7 @@ A simple console-based **Personal Budget Tracker** application built with C#/.NE
 
 1. **Clone the Repository**:
    ```bash
-   git clone git@github.com:OkuhleMwelase/PersonalBudgetTracker.git
+   git clone git@github.com:MazibukoLindokuhle/PersonalBudgetTracker.git
    cd PersonalBudgetTracker
 
 2. **Build the Project**:
